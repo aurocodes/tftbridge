@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Build settings (app/build.gradle): minSdk 30, targetSdk 35 or higher, no third-party dependencies.
+  Package: com.example.tftbridge  (rename freely, keep the Java files' package line in sync)
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Foreground service + screen capture (Android 14+ requires the typed permission) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Transport to the console. Keep only what the Bajaj protocol actually uses. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+
+    <application
+        android:allowBackup="false"
+        android:label="TFT Bridge"
+        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Screen capture + H.264 encoder. foregroundServiceType MUST be mediaProjection. -->
+        <service
+            android:name=".BridgeService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <!-- User enables this under Settings > Notification access (MainActivity opens it). -->
+        <service
+            android:name=".MapsNotificationService"
+            android:exported="true"
+            android:label="TFT Bridge Maps Listener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+    </application>
+</manifest>
